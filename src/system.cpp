@@ -22,7 +22,7 @@ Processor& System::Cpu() { return cpu_; }
 vector<Process>& System::Processes() {
   // Read pids
   vector<int> pids{LinuxParser::Pids()};
-  
+
   set<int> present_pids;
   for (const auto& process : processes_) {
     present_pids.insert(process.Pid());

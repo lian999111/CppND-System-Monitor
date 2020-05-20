@@ -22,16 +22,15 @@ int Process::Pid() const { return pid_; }
 void Process::UpdateCpuUtilization() {
   long curr_total = LinuxParser::Jiffies() - start_time_;
   long curr_active = LinuxParser::ActiveJiffies(pid_);
-  cpu_utilization_ = static_cast<float>(curr_active - prev_active_) / (curr_total - prev_total_);
+  cpu_utilization_ = static_cast<float>(curr_active - prev_active_) /
+                     (curr_total - prev_total_);
   prev_total_ = curr_total;
   prev_active_ = curr_active;
 }
 
 // TODO: Return this process's CPU utilization
 // Done
-float Process::CpuUtilization() const {
-  return cpu_utilization_;
-}
+float Process::CpuUtilization() const { return cpu_utilization_; }
 
 // TODO: Return the command that generated this process
 // Done

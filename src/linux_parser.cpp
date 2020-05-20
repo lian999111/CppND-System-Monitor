@@ -127,20 +127,20 @@ long LinuxParser::ActiveJiffies(int pid) {
       stream >> value;
       switch (idx) {
         case 14:
-        utime = std::stol(value);
-        break;
-        
+          utime = std::stol(value);
+          break;
+
         case 15:
-        stime = std::stol(value);
-        break;
+          stime = std::stol(value);
+          break;
 
         case 16:
-        cutime = std::stol(value);
-        break;
+          cutime = std::stol(value);
+          break;
 
         case 17:
-        cstime = std::stol(value);
-        break;
+          cstime = std::stol(value);
+          break;
       }
     }
   }
@@ -237,7 +237,7 @@ string LinuxParser::Command(int pid) {
   string command;
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kCmdlineFilename);
   if (stream.is_open()) {
-    stream >> command;
+    std::getline(stream, command);
   }
   return command;
 }
@@ -289,7 +289,7 @@ string LinuxParser::User(int pid) {
 // REMOVE: [[maybe_unused]] once you define the function
 // Done
 long LinuxParser::UpTime(int pid) {
-  long sys_uptime = UpTime();   // in seconds
+  long sys_uptime = UpTime();  // in seconds
   long process_uptime = sys_uptime - StartTime(pid) / sysconf(_SC_CLK_TCK);
   return process_uptime;
 }

@@ -8,10 +8,10 @@ It contains relevant attributes as shown below
 */
 class Process {
  public:
-  Process(int pid);                        // Ctor
-  int Pid() const;                         // TODO: See src/process.cpp
-  std::string User() const;                // TODO: See src/process.cpp
-  std::string Command() const;             // TODO: See src/process.cpp
+  Process(int pid);             // Ctor
+  int Pid() const;              // TODO: See src/process.cpp
+  std::string User() const;     // TODO: See src/process.cpp
+  std::string Command() const;  // TODO: See src/process.cpp
   void UpdateCpuUtilization();
   float CpuUtilization() const;            // TODO: See src/process.cpp
   std::string Ram() const;                 // TODO: See src/process.cpp

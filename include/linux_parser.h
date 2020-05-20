@@ -53,6 +53,6 @@ std::string Uid(int pid);
 std::string User(int pid);
 long int UpTime(int pid);
 long StartTime(int pid);  // for computing more current process cpu utilization
-};  // namespace LinuxParser
+};                        // namespace LinuxParser
 
 #endif
