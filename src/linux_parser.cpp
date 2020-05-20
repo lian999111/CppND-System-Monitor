@@ -175,6 +175,7 @@ int LinuxParser::TotalProcesses() {
       linestream >> key;
       if (key == "processes") {
         linestream >> processes;
+        break;
       }
     }
   }
@@ -194,6 +195,7 @@ int LinuxParser::RunningProcesses() {
       linestream >> key;
       if (key == "procs_running") {
         linestream >> running_processes;
+        break;
       }
     }
   }
