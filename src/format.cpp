@@ -10,10 +10,10 @@ using std::to_string;
 // OUTPUT: HH:MM:SS
 // REMOVE: [[maybe_unused]] once you define the function
 string Format::ElapsedTime(long seconds) {
-    long hours, minutes;
-    hours = seconds / 3600;
-    seconds = seconds % 3600;
-    minutes = seconds / 60;
-    seconds = seconds % 60;
-    return to_string(hours) + ":" + to_string(minutes) + ":" + to_string(seconds);
+  long hours, minutes;
+  hours = seconds / 3600;
+  seconds = seconds % 3600;
+  minutes = seconds / 60;
+  seconds = seconds % 60;
+  return to_string(hours) + ":" + to_string(minutes) + ":" + to_string(seconds);
 }

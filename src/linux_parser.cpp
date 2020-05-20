@@ -2,7 +2,8 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
-//  #include <experimental/filesystem>  // use <experimental/filesystem> cuz gcc v7 does not yet implement <filesystem>
+//  #include <experimental/filesystem>  // use <experimental/filesystem> cuz gcc
+//  v7 does not yet implement <filesystem>
 
 #include "linux_parser.h"
 
@@ -78,7 +79,7 @@ float LinuxParser::MemoryUtilization() {
     while (std::getline(stream, line)) {
       std::istringstream linestream(line);
       linestream >> key;
-      
+
       if (key == "MemTotal:") {
         linestream >> mem_total;
       }
@@ -111,20 +112,55 @@ long LinuxParser::UpTime() {
 }
 
 // TODO: Read and return the number of jiffies for the system
-long LinuxParser::Jiffies() { return 0; }
+// Done
+long LinuxParser::Jiffies() { return ActiveJiffies() + IdleJiffies(); }
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
 
 // TODO: Read and return the number of active jiffies for the system
-long LinuxParser::ActiveJiffies() { return 0; }
+// Done
+long LinuxParser::ActiveJiffies() {
+  vector<string> cpu_stat = CpuUtilization();
+  long user = std::stol(cpu_stat[1]);
+  long nice = std::stol(cpu_stat[2]);
+  long system = std::stol(cpu_stat[3]);
+  long irq = std::stol(cpu_stat[6]);
+  long softirq = std::stol(cpu_stat[7]);
+  long steal = std::stol(cpu_stat[8]);
+  return user + nice + system + irq + softirq + steal;
+}
 
 // TODO: Read and return the number of idle jiffies for the system
-long LinuxParser::IdleJiffies() { return 0; }
+// Done
+long LinuxParser::IdleJiffies() {
+  vector<string> cpu_stat = CpuUtilization();
+  long idle = std::stol(cpu_stat[4]);
+  long iowait = std::stol(cpu_stat[5]);
+  return idle + iowait;
+}
 
 // TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { return {}; }
+// Done
+vector<string> LinuxParser::CpuUtilization() {
+  vector<string> cpu_stat;  // the vector containing the values in the first
+                            // line of /proc/stat
+  std::ifstream stream(kProcDirectory + kStatFilename);
+
+  if (stream.is_open()) {
+    string line, value;
+    // Get the first line
+    if (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> value) {
+        cpu_stat.emplace_back(value);
+      }
+    }
+  }
+
+  return cpu_stat;
+}
 
 // TODO: Read and return the total number of processes
 // Done
