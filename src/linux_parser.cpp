@@ -150,7 +150,7 @@ vector<string> LinuxParser::CpuUtilization() {
 
   if (stream.is_open()) {
     string line, value;
-    // Get the first line
+    // Get only the first line
     if (std::getline(stream, line)) {
       std::istringstream linestream(line);
       while (linestream >> value) {
