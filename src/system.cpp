@@ -23,12 +23,13 @@ vector<Process>& System::Processes() {
   // Read pids
   vector<int> pids{LinuxParser::Pids()};
 
+  // Create a set of pids
   set<int> present_pids;
   for (const auto& process : processes_) {
     present_pids.insert(process.Pid());
   }
 
-  // Add new processes
+  // Add processes not found in the pid set
   for (const auto pid : pids) {
     if (present_pids.find(pid) == present_pids.end()) {
       processes_.emplace_back(pid);

@@ -311,6 +311,7 @@ long LinuxParser::UpTime(int pid) {
   return process_uptime;
 }
 
+// Parser for process start time
 long LinuxParser::StartTime(int pid) {
   long start_time{0};
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatFilename);
