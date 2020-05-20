@@ -37,7 +37,18 @@ float Process::CpuUtilization() const { return cpu_utilization_; }
 string Process::Command() const { return LinuxParser::Command(pid_); }
 
 // TODO: Return this process's memory utilization
-string Process::Ram() const { return string(); }
+// Done
+string Process::Ram() const {
+  string ram_in_kB = LinuxParser::Ram(pid_);
+  string ram_in_MB;
+  if (ram_in_kB.empty()) {
+    // Zombie processes do not use up memory
+    ram_in_MB = "0";
+  } else {
+    ram_in_MB = std::to_string(std::stol(ram_in_kB) / 1024);
+  }
+  return ram_in_MB;
+}
 
 // TODO: Return the user (name) that generated this process
 // Done
