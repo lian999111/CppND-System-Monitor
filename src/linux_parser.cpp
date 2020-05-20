@@ -117,18 +117,46 @@ long LinuxParser::Jiffies() { return ActiveJiffies() + IdleJiffies(); }
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
+// Done
+long LinuxParser::ActiveJiffies(int pid) {
+  long utime{0}, stime{0}, cutime{0}, cstime{0};
+  std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatFilename);
+  if (stream.is_open()) {
+    string value;
+    for (int idx = 1; idx < 18; ++idx) {
+      stream >> value;
+      switch (idx) {
+        case 14:
+        utime = std::stol(value);
+        break;
+        
+        case 15:
+        stime = std::stol(value);
+        break;
+
+        case 16:
+        cutime = std::stol(value);
+        break;
+
+        case 17:
+        cstime = std::stol(value);
+        break;
+      }
+    }
+  }
+  return utime + stime + cutime + cstime;
+}
 
 // TODO: Read and return the number of active jiffies for the system
 // Done
 long LinuxParser::ActiveJiffies() {
   vector<string> cpu_stat = CpuUtilization();
-  long user = std::stol(cpu_stat[1]);
-  long nice = std::stol(cpu_stat[2]);
-  long system = std::stol(cpu_stat[3]);
-  long irq = std::stol(cpu_stat[6]);
-  long softirq = std::stol(cpu_stat[7]);
-  long steal = std::stol(cpu_stat[8]);
+  long user = std::stol(cpu_stat[CPUStates::kUser_]);
+  long nice = std::stol(cpu_stat[CPUStates::kNice_]);
+  long system = std::stol(cpu_stat[CPUStates::kSystem_]);
+  long irq = std::stol(cpu_stat[CPUStates::kIRQ_]);
+  long softirq = std::stol(cpu_stat[CPUStates::kSoftIRQ_]);
+  long steal = std::stol(cpu_stat[CPUStates::kSteal_]);
   return user + nice + system + irq + softirq + steal;
 }
 
@@ -136,8 +164,8 @@ long LinuxParser::ActiveJiffies() {
 // Done
 long LinuxParser::IdleJiffies() {
   vector<string> cpu_stat = CpuUtilization();
-  long idle = std::stol(cpu_stat[4]);
-  long iowait = std::stol(cpu_stat[5]);
+  long idle = std::stol(cpu_stat[CPUStates::kIdle_]);
+  long iowait = std::stol(cpu_stat[CPUStates::kIOwait_]);
   return idle + iowait;
 }
 
@@ -154,7 +182,7 @@ vector<string> LinuxParser::CpuUtilization() {
     if (std::getline(stream, line)) {
       std::istringstream linestream(line);
       while (linestream >> value) {
-        cpu_stat.emplace_back(value);
+        cpu_stat.push_back(value);
       }
     }
   }
@@ -207,7 +235,7 @@ int LinuxParser::RunningProcesses() {
 // Done
 string LinuxParser::Command(int pid) {
   string command;
-  std::ifstream stream(kProcDirectory + std::to_string(pid));
+  std::ifstream stream(kProcDirectory + std::to_string(pid) + kCmdlineFilename);
   if (stream.is_open()) {
     stream >> command;
   }
@@ -259,4 +287,25 @@ string LinuxParser::User(int pid) {
 
 // TODO: Read and return the uptime of a process
 // REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::UpTime(int pid[[maybe_unused]]) { return 0; }
+// Done
+long LinuxParser::UpTime(int pid) {
+  long sys_uptime = UpTime();   // in seconds
+  long process_uptime = sys_uptime - StartTime(pid) / sysconf(_SC_CLK_TCK);
+  return process_uptime;
+}
+
+long LinuxParser::StartTime(int pid) {
+  long start_time{0};
+  std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatFilename);
+  if (stream.is_open()) {
+    string value;
+    for (int idx = 1; idx < 23; ++idx) {
+      stream >> value;
+      // Get the 22nd value
+      if (idx == 22) {
+        start_time = std::stol(value);
+      }
+    }
+  }
+  return start_time;  // in jiffies
+}

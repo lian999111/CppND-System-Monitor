@@ -35,6 +35,14 @@ vector<Process>& System::Processes() {
     }
   }
 
+  // Update cpu utilizations
+  for (auto& process : processes_) {
+    process.UpdateCpuUtilization();
+  }
+
+  // Sort processes based on cpu utilizations
+  std::sort(processes_.begin(), processes_.end(), std::greater<Process>());
+
   return processes_;
 }
 
